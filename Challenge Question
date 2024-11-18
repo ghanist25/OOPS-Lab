@@ -1,0 +1,98 @@
+#include <iostream>
+using namespace std;
+
+class BankAccount {
+private:
+    static int totalAccounts;           
+    static const int MIN_HIGH_VALUE;    
+    int accountNumber;                  
+    double balance;                     
+
+public:
+    BankAccount(double initialBalance) {
+        balance = initialBalance;
+        accountNumber = ++totalAccounts;
+    }
+
+    static int getTotalAccounts() {
+        return totalAccounts;
+    }
+
+    void deposit(double amount) {
+        balance += amount;
+    }
+
+    void withdraw(double amount) {
+        if (amount <= balance) {
+            balance -= amount;
+        } else {
+            cout << "Insufficient balance\n";
+        }
+    }
+
+    void display() const {
+        cout << "Account Number: " << accountNumber << ", Balance: " << balance << "\n";
+    }
+
+    bool isHighValueAccount() const {
+        return balance >= MIN_HIGH_VALUE;
+    }
+};
+
+int BankAccount::totalAccounts = 0;
+const int BankAccount::MIN_HIGH_VALUE = 1000;
+
+class Bank {
+private:
+    BankAccount* accounts[10]; 
+    int accountCount;         
+public:
+   
+    Bank() : accountCount(0) {}
+
+    void addAccount(double initialBalance) {
+        accounts[accountCount] = new BankAccount(initialBalance);
+        accountCount++;
+    }
+
+    void displayHighValueAccounts() const {
+        cout << "High-value accounts:\n";
+        for (int i = 0; i < accountCount; i++) {
+            if (accounts[i]->isHighValueAccount()) {
+                accounts[i]->display();
+            }
+        }
+    }
+
+    // Function to display all accounts
+    void displayAllAccounts() const {
+        for (int i = 0; i < accountCount; i++) {
+            accounts[i]->display();
+        }
+    }
+
+    ~Bank() {
+        for (int i = 0; i < accountCount; i++) {
+            delete accounts[i];
+        }
+    }
+};
+
+int main() {
+    Bank bank;
+
+    bank.addAccount(500);
+    bank.addAccount(1200);
+    bank.addAccount(750);
+    bank.addAccount(2500);
+    bank.addAccount(800);
+
+    cout << "Account details:\n";
+    bank.displayAllAccounts();
+
+    bank.displayHighValueAccounts();
+
+    cout << "Total accounts created: " << BankAccount::getTotalAccounts() << "\n";
+
+    return 0;
+}
